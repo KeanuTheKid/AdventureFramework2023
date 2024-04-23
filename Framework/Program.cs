@@ -26,6 +26,8 @@ builder.Services.AddBlazoredToast();
 builder.Services.AddScoped<SlideService>();
 builder.Services.AddScoped<GameState>();
 
+builder.Services.AddScoped<SlidesVerifier>();
+
 
 // // TODO: Find better solution to execute functions at startup
 // // Apparently this only contains Services registered prior to its initialization, and it doesn't update

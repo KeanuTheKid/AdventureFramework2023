@@ -2,10 +2,12 @@
 @using Framework.TestComp
 @using Framework.Minigames
 @using Framework.Keyboard
+@using InventoryUI
 
 @inject KeyboardService KeyboardService
 
 @* <TestComp /> *@
 
 @* <Minigame MinigameDefClass="Framework.Minigames.LaurinsRain" OnFinished="((success) => Console.WriteLine(success))" /> *@
-<Minigame MinigameDefClass="Framework.Minigames.ElementStyleTest" OnFinished="((success) => Console.WriteLine(success))" />
+
+<GameStateInventory.InventoryUI />

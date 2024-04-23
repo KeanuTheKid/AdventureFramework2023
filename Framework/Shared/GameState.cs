@@ -3,29 +3,59 @@ using Microsoft.AspNetCore.Components;
 using JsonUtilities;
 using FrameworkItems;
 using static InventoryEvent;
-
+using Microsoft.JSInterop;
+using ObjectEncoding;
+using Framework.Minigames;
 //Notifications
 using Blazored.Toast.Services;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
 
 namespace GameStateInventory;
+
+public interface IGameState
+{
+	// if value exists, set it, else create new entry
+	void SetVisibility(string name, bool value);
+	bool CheckVisibility(string name);
+
+	void AddItem(string id);
+	void RemoveItem(string id);
+	bool CheckForItem(string id);
+
+	// minigames probably should be seperated from other stuff
+	// if value exists, set it, else create new entry
+
+	//TODO Implement This:
+	void SetMinigame(string name, MinigameDefBase minigame);
+	void GetMinigame(string name);
+
+	string CurrentSlide { get; set; }
+
+	// need to think about the name
+	//TODO Implement this:
+	void SetFromSaveString(string saveString);
+	string GetSaveString();
+}
 
 public class GameState
 {
 	private readonly IToastService ToastService;
+
 	protected JsonUtility JsonUtility { get; set; } = null!;
 
 	protected Items Items { get; set; }
 	//Initialize Inventory
 	private static List<string> ItemsInInventory = new();
 
-	public static Dictionary<string, bool> State = new();
+	private static Dictionary<string, bool> State = new();
 
 	public GameState(JsonUtility jsonUtility, Items items, IToastService toastService)
 	{
 		JsonUtility = jsonUtility;
 		Items = items;
 		ToastService = toastService;
+
 	}
 
 	public async Task LoadGameStateAndItemsAsync(string path = "gamestate.json")
@@ -57,6 +87,8 @@ public class GameState
 			return true;
 		}
 	}
+	public bool CheckForVisibility(string name) => State.ContainsKey(name);
+
 
 	public void AddVisibility(string name, bool value)
 	{
@@ -71,10 +103,10 @@ public class GameState
 		{
 			throw new ArgumentException($"Element {id} is not in Inventory");
 		}
-		Console.WriteLine($"Successfully removed {id} from inventory");
+		// Console.WriteLine($"Successfully removed {id} from inventory");
 	}
 
-	public async void AddItem(string id)
+	public void AddItem(string id)
 	{
 
 		if (Items.DoesItemExist(id) == false)
@@ -84,58 +116,74 @@ public class GameState
 		ItemsInInventory.Add(id);
 
 		ToastService.ShowSuccess($"Added {id} to inventory");
-		Console.WriteLine($"Successfully added {id} to inventory");
 
 		//Event handler for updateing inventory images
 		InventoryEvent.OnItemAdded(this, new ItemAddedEventArgs { ItemId = id });
 	}
+
 	public bool CheckForItem(string id)
 	{
 		return ItemsInInventory.Contains(id);
 	}
+
+	public List<string> GetItemStrings()
+	{
+		return ItemsInInventory;
+	}
 	public Dictionary<string, Item> GetItemObjects()
 	{
-        Dictionary<string, Item> ItemObjects = new();
+		Dictionary<string, Item> ItemObjects = new();
 
 		foreach (string id in ItemsInInventory)
-		{	
+		{
 			if (Items.items.ContainsKey(id))
 			{
 				ItemObjects.Add(id, Items.items[id]);
 			}
-			
+
 		}
 
 		return ItemObjects;
 	}
 
-	public string Save(string key = "1234", string path = "gamestate.json")
+	public string GetSaveString()
 	{
-		string encrypted = "";
+		// Console.WriteLine("GetSaveString called");
+		GameStateData data = new GameStateData(ItemsInInventory, State);
+		// foreach (var item in data.Items)
+		// {
+		// 	Console.WriteLine(item);
+		// }
+		return ObjectEncoder.EncodeObject(data);
+	}
 
-		try
-		{	
-			//TODO Encryption implementation needed
-			//encrypted = JsonUtility.EncryptGameStateInventory(State, ItemsInInventory, key);
-			Console.WriteLine("Save successful");
-		}
-		catch (Exception ex)
+	public void SetFromSaveString(string hex)
+	{
+		// Console.WriteLine("SetFromSaveString called");
+		GameStateData? data = ObjectEncoder.DecodeObject<GameStateData>(hex) ?? throw new Exception("GameStateData is null");
+		GameState.State = data.gameState;
+
+		// foreach (var item in data.Items)
+		// {
+		// 	Console.WriteLine(item);
+		// }
+
+		GameState.ItemsInInventory = data.Items;
+	}
+	public class GameStateData
+	{
+
+		public List<string> Items { get; }
+		public Dictionary<string, bool> gameState { get; }
+		//public Dictionary<string, object> Minigames => Minigames;
+		public GameStateData(List<string> items, Dictionary<string, bool> gamestate)
 		{
-			Console.WriteLine($"Error during save: {ex.Message}");
-			// Log the exception or take appropriate actions
-			throw new Exception("Could not encrypt and save", ex);
+
+			Items = items;
+			gameState = gamestate;
 		}
-
-		return encrypted;
 	}
-
-
-	public void LoadFromString(string encrypted)
-	{
-
-	}
-
-
 
 }
+
 

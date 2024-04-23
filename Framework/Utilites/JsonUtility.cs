@@ -23,5 +23,7 @@ namespace JsonUtilities
             string json = JsonSerializer.Serialize(data);
             File.WriteAllText(fileName, json);
         }
+
     }
+    
 }

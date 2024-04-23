@@ -1,21 +1,22 @@
 @namespace GameStateInventory
 @inherits Framework.InventoryUI.InventoryUIBase
 @using Blazored.Toast.Services
+@using Microsoft.JSInterop;
+
 
 @* @inject IToastService _toastService *@
 
 <div class="horizontal-images">
     @foreach (string id in InvItems.Keys)
     {
-        Console.WriteLine(id);
-        string s = InvItems[id].Image;
-        Console.WriteLine(s);
+        
         <div class="image-container">
             <div class="image-text">@InvItems[id].Description</div>
             <img src="@InvItems[id].Image">
        </div>
     
     }
+    
 </div>
 
 

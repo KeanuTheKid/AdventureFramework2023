@@ -16,8 +16,8 @@ public static class InventoryEvent
 
     // Method to trigger the ItemAdded event
     public static void OnItemAdded(object sender, ItemAddedEventArgs e)
-    {   
-        Console.WriteLine("OnItemAdded called");
+    {
+        // Console.WriteLine("OnItemAdded called");
         ItemAdded?.Invoke(sender, e);
     }
 }
