@@ -8,6 +8,58 @@
 
 @* <TestComp /> *@
 
-@* <Minigame MinigameDefClass="Framework.Minigames.LaurinsRain" OnFinished="((success) => Console.WriteLine(success))" /> *@
+@* @* <Minigame MinigameDefClass="Framework.Minigames.LaurinsRain" OnFinished="((success) => Console.WriteLine(success))" /> *@
+@* <Minigame MinigameDefClass="Framework.Minigames.ElementStyleTest" OnFinished="((success) => Console.WriteLine(success))" /> *@
+@* <Minigame MinigameDefClass="Framework.Minigames.MouseServiceTest" OnFinished="((success) => Console.WriteLine(success))" /> *@
+@* <Minigame MinigameDefClass="Framework.Minigames.AudioTest" OnFinished="((success) => Console.WriteLine(success))" /> *@
 
-<GameStateInventory.InventoryUI />
+<Minigame MinigameDefClass="Framework.Minigames.VideoTest" OnFinished="((success) => Console.WriteLine(success))" />
+
+
+
+@* @((MarkupString)test)
+
+<br>
+<br>
+
+@test2()
+
+
+<br>
+<br>
+
+@stuffy()
+
+@code {
+    private string test = "<p>hello</p>";
+
+
+    private RenderFragment test2() => builder => {
+        builder.AddContent(0, (MarkupString)"<p>hell2</p>");
+    };
+
+    
+    private List<object> stuff = [];
+
+    private RenderFragment stuffy() => builder => {
+        builder.OpenElement(0, "div");
+        int i = 1;
+        foreach (var thing in stuff) {
+            if (thing is string s) { builder.AddContent(i, (MarkupString)s); }
+            else if (thing is MarkupString m) { builder.AddContent(i, m); }
+            else if (thing is RenderFragment r) {builder.AddContent(i, r); }
+            i++;
+        }
+        builder.CloseElement();
+    };
+
+    protected override void OnInitialized() {
+        stuff.Add(test);
+        stuff.Add(test2());
+    }
+} *@
+
+@* <Minigame MinigameDefClass="Framework.Minigames.AudioTest" OnFinished="((success) => Console.WriteLine(success))" /> *@
+
+@* <Minigame MinigameDefClass="Framework.Minigames.IOServicesTest" OnFinished="((success) => Console.WriteLine(success))" /> *@
+@* <Minigame MinigameDefClass="Framework.Minigames.KeyboardStateTest" OnFinished="((success) => Console.WriteLine(success))" /> *@

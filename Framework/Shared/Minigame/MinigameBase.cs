@@ -4,6 +4,8 @@ using System.Reflection;
 using GameStateInventory;
 using Framework.Keyboard;
 using Framework.Mouse;
+using Framework.Sound;
+using Framework.Video;
 
 namespace Framework.Minigames;
 
@@ -71,7 +73,7 @@ public class MinigameBase : ComponentBase
 {
 	// Inject the GameState
 	[Inject]
-	public GameState GameState { get; set; } = null!;
+	public IMinigameGameState GameState { get; set; } = null!;
 
 	// Inject the Keyboard and Mouse services
 	// use the interface so that they cannot break anything
@@ -80,16 +82,21 @@ public class MinigameBase : ComponentBase
 	[Inject]
 	public MouseService MouseService { get; set; } = null!;
 
+	[Inject]
+	public ISoundService SoundService { get; set; } = null!;
+
+	[Inject]
+	public IVideoService VideoService { get; set; } = null!;
+
 	[Parameter]
 	public string MinigameDefClass { get; set; } = null!;
 
-	// TODO: Remake the finish funcionality so that it has a purpose
 	[Parameter]
-	public EventCallback<bool> OnFinished { get; set; }
+	public EventCallback<List<List<string>>> OnFinished { get; set; }
 
-	protected async Task Finish(bool success)
+	protected async Task Finish(List<List<string>> actions)
 	{
-		await OnFinished.InvokeAsync(success);
+		await OnFinished.InvokeAsync(actions);
 	}
 
 	protected MinigameDefBase MinigameDef { get; set; } = null!;
@@ -112,7 +119,7 @@ public class MinigameBase : ComponentBase
 			MinigameDef = (MinigameDefBase)instance;
 
 			// attach events
-			MinigameDef.Finished += async (sender, e) => await Finish(e.Success);
+			MinigameDef.Finished += async (sender, e) => await Finish(e.Actions);
 			MinigameDef.UpdateEvent += (sender, e) => StateHasChanged();
 
 			// attach gamestate
@@ -121,6 +128,8 @@ public class MinigameBase : ComponentBase
 			// attach I/O services
 			MinigameDef.KeyboardService = KeyboardService;
 			MinigameDef.MouseService = MouseService;
+			MinigameDef.SoundService = SoundService;
+			MinigameDef.VideoService = VideoService;
 
 			// Run the Init method
 			MinigameDef.Init();
@@ -148,9 +157,12 @@ public abstract class MinigameDefBase
 
 	public abstract string BackgroundImage { get; set; }
 
-	public GameState GameState { get; set; } = null!;
+	public IMinigameGameState GameState { get; set; } = null!;
 	public IKeyboardService KeyboardService { get; set; } = null!;
 	public IMouseService MouseService { get; set; } = null!;
+
+	public ISoundService SoundService { get; set; } = null!;
+	public IVideoService VideoService { get; set; } = null!;
 
 	public void Init()
 	{
@@ -163,7 +175,7 @@ public abstract class MinigameDefBase
 			{
 				// check if the property is a SVGElement if it is, 
 				// cast and assign it to element, then add it to the list
-				if (property.GetValue(this) is SVGElement element)
+				if (property.GetValue(this) is GameObject element)
 				{
 					// Elements.Add(element);
 					Elements.Add(element);
@@ -226,6 +238,9 @@ public abstract class MinigameDefBase
 		MouseService.OnMouseDown -= OnMouseDown;
 		MouseService.OnMouseUp -= OnMouseUp;
 
+		// stop the mouse tracking
+		MouseService.SetDelay(-1);
+
 		// Stop the GameLoop
 		Cts.Cancel();
 		Cts.Dispose();
@@ -236,11 +251,25 @@ public abstract class MinigameDefBase
 	public event EventHandler? UpdateEvent;
 
 
-	public void Finish(bool success)
+	public void Finish(List<List<string>>? actions, string? route = null)
 	{
 		// really important
 		Exit();
-		Finished?.Invoke(this, new FinishedEventArgs { Success = success });
+
+
+		if (route != null)
+		{
+			Finished?.Invoke(this, new FinishedEventArgs { Actions = [["Route", route]] });
+			return;
+		}
+		else if (actions != null)
+		{
+			Finished?.Invoke(this, new() { Actions = actions });
+			return;
+		}
+
+		// if both actions and route are null, just do nothing
+		Finished?.Invoke(this, new() { Actions = [] });
 	}
 
 	// Btw, I think I found out why it worked before without this:
@@ -261,6 +290,14 @@ public abstract class MinigameDefBase
 		Elements.Add(element);
 	}
 
+	public void AddElementsInContainer(GameObjectContainer<SVGElement> container){
+		SVGElement[] elements = container.Values;
+
+		foreach (SVGElement element in elements){
+			Elements.Add(element);
+		}
+	}
+
 }
 
 /* 
@@ -272,7 +309,7 @@ finishing will work like this
 
 public class FinishedEventArgs : EventArgs
 {
-	public bool Success { get; set; }
+	public List<List<string>> Actions = [];
 }
 
 

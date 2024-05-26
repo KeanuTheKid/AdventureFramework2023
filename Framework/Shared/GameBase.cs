@@ -2,6 +2,7 @@ using Framework.Slides;
 using Microsoft.AspNetCore.Components;
 using Framework.Game.Parameters;
 using GameStateInventory;
+using Framework.Sound;
 
 
 namespace Framework.Game;
@@ -14,6 +15,9 @@ public partial class GameBase : ComponentBase
 	[Inject]
 	protected GameState GameState { get; set; } = null!;
 
+	[Inject]
+	protected SoundService SoundService { get; set; } = null!;
+
 	// // private readonly TaskCompletionSource<bool> _tcs = new();
 	// // protected Task InitTask => _tcs.Task;
 
@@ -25,10 +29,11 @@ public partial class GameBase : ComponentBase
 
 	protected override void OnInitialized()
 	{
-		string slideId = SlideService.GetStartSlideId();
+		// string slideId = SlideService.GetStartSlideId();
+		// string slideId = GameState.CurrentSlide;
 		Parameters = new SlideComponentParameters()
 		{
-			SlideId = slideId,
+			SlideId = GameState.CurrentSlide,
 			OnButtonClick = EventCallback.Factory.Create<List<List<string>>>(this, EvaluateActions)
 		};
 		// // _tcs.SetResult(true);
@@ -41,22 +46,23 @@ public partial class GameBase : ComponentBase
 
 	protected void ChangeSlide(string slideId)
 	{
+		// for debug, throw an exception if the slide does not exist
+		if (Debug)
+		{
+			SlideService.GetSlide(slideId);
+		}
+
+
 		Parameters.SlideId = slideId;
+		// still a bit hacky, but I guess
+		GameState.CurrentSlide = slideId;
 		// Console.WriteLine(SlideId);
 		StateHasChanged();
 	}
 
-	protected void FinishMinigame(bool success)
+	protected async Task FinishMinigame(List<List<string>> actions)
 	{
-		if (success)
-		{
-			ChangeSlide(SlideService.GetSlide(Parameters.SlideId).FallbackSlide!);
-		}
-		// TODO: Also, maybe make this function actually do something different based on success
-		else
-		{
-			ChangeSlide(SlideService.GetSlide(Parameters.SlideId).FallbackSlide!);
-		}
+		await EvaluateActions(actions);
 	}
 
 	protected struct Block
@@ -105,13 +111,13 @@ public partial class GameBase : ComponentBase
 					switch (action[2])
 					{
 						case "true":
-							GameState.SetVisibility(action[1], true);
+							GameState.SetState(action[1], true);
 							break;
 						case "false":
-							GameState.SetVisibility(action[1], false);
+							GameState.SetState(action[1], false);
 							break;
 						case "toggle":
-							GameState.ChangeVisibility(action[1]);
+							GameState.ToggleState(action[1]);
 							break;
 						default:
 							break;
@@ -161,7 +167,7 @@ public partial class GameBase : ComponentBase
 					if (action[1].StartsWith("!"))
 					{
 						// remove leading "!"
-						if (!GameState.CheckVisibility(action[1][1..]))
+						if (!GameState.GetState(action[1][1..]))
 						{
 							// if it is true, continue with executing
 							// Console.WriteLine($"Required GameState: {action[1]}");
@@ -171,7 +177,7 @@ public partial class GameBase : ComponentBase
 					// if the check if not negated
 					else
 					{
-						if (GameState.CheckVisibility(action[1]))
+						if (GameState.GetState(action[1]))
 						{
 							// if it is true, continue with executing
 							// Console.WriteLine($"Required GameState: {action[1]}");
@@ -195,6 +201,18 @@ public partial class GameBase : ComponentBase
 						// Console.WriteLine("return");
 						return;
 					}
+
+				case "PlaySound":
+					await SoundService.PlaySound(action[1]);
+					break;
+
+				case "PlayMusic":
+					await SoundService.PlayMusic(action[1]);
+					break;
+
+				case "StopMusic":
+					await SoundService.StopMusic();
+					break;
 
 				case "StartBlock":
 					block.Stack.Add(action[1]);

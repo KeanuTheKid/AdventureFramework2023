@@ -1,5 +1,6 @@
 {
     "HM305": {
+        "Tags": ["START"],
         "Image": "images/HM305_fromEntrance.jpg",
         "Buttons": {
             "Blackboard": {
@@ -11,7 +12,7 @@
                 "Type": "polygon",
                 "Points": "915,197,956,217,956,248,918,256,868,244,869,217",
                 "Actions": [
-                    ["RequireItem", "frog"],
+                    ["RequireItem", "goldkey"],
                     ["Route", "HM305Beamer"]
                 ]
             },
@@ -42,13 +43,16 @@
             "CircleTest": {
                 "Type": "circle",
                 "Points": "100,100,50",
-                "Actions": [["Route", "MinigameTest3"]],
+                "Actions": [
+                    ["Route", "MinigameTest3"],
+                    ["StopMusic", ""]
+                ],
                 "Visible": true
             },
             "PresetTest": {
                 "Type": "preset",
                 "Image": "right",
-                "Actions": []
+                "Actions": [["PlayMusic", "audio/doom-soundtrack.wav"]]
             }
         }
     },
@@ -90,7 +94,8 @@
             "CodeTerminal": {
                 "Type": "polygon",
                 "Points": "764,458 764,491 775,495 775,465 764,458 792,39",
-                "Actions": [["Route", "HM305CodeTerminal"]]
+                "Actions": [["Route", "HM305CodeTerminal"]],
+                "Visible": true
             }
         }
     },
@@ -197,6 +202,16 @@
     "HM3_hallwayW": {
         "Image": "images/HM3_hallwayW.jpg",
         "Buttons": {
+            "LeftPreset": {
+                "Type": "preset",
+                "Image": "left",
+                "Actions": [["Route", "HM3_hallwayS"]]
+            },
+            "RightPreset": {
+                "Type": "preset",
+                "Image": "right",
+                "Actions": [["Route", "HM3_hallwayN"]]
+            },
             "Left": {
                 "Type": "image",
                 "Image": "UI_Images/leftImg.png",
@@ -225,6 +240,16 @@
     "HM3_hallwayN": {
         "Image": "images/HM3_hallwayN.jpg",
         "Buttons": {
+            "LeftPreset": {
+                "Type": "preset",
+                "Image": "left",
+                "Actions": [["Route", "HM3_hallwayW"]]
+            },
+            "RightPreset": {
+                "Type": "preset",
+                "Image": "right",
+                "Actions": [["Route", "HM3_hallwayE"]]
+            },
             "Left": {
                 "Type": "image",
                 "Image": "UI_Images/leftImg.png",
@@ -253,6 +278,16 @@
     "HM3_hallwayE": {
         "Image": "images/HM3_hallwayE.jpg",
         "Buttons": {
+            "LeftPreset": {
+                "Type": "preset",
+                "Image": "left",
+                "Actions": [["Route", "HM3_hallwayN"]]
+            },
+            "RightPreset": {
+                "Type": "preset",
+                "Image": "right",
+                "Actions": [["Route", "HM3_hallwayS"]]
+            },
             "Left": {
                 "Type": "image",
                 "Image": "UI_Images/leftImg.png",
@@ -286,6 +321,16 @@
     "HM3_hallwayS": {
         "Image": "images/HM3_hallwayS.jpg",
         "Buttons": {
+            "LeftPreset": {
+                "Type": "preset",
+                "Image": "left",
+                "Actions": [["Route", "HM3_hallwayE"]]
+            },
+            "RightPreset": {
+                "Type": "preset",
+                "Image": "right",
+                "Actions": [["Route", "HM3_hallwayW"]]
+            },
             "Left": {
                 "Type": "image",
                 "Image": "UI_Images/leftImg.png",

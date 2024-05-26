@@ -2,6 +2,7 @@
 @inherits Framework.InventoryUI.InventoryUIBase
 @using Blazored.Toast.Services
 @using Microsoft.JSInterop;
+@using Blazored.Video;
 
 
 @* @inject IToastService _toastService *@
@@ -19,4 +20,24 @@
     
 </div>
 
+<BlazoredVideo @ref="video" class="w-40" autoplay="autoplay" loop="loop" style="max-width:300px;">
+    <source src="monkey.mp4" type="video/mp4" />
+</BlazoredVideo>
+<br/>
+<button class="btn btn-primary" @onclick="ToggleVideo">Toggle Video</button>
 
+@code {
+    BlazoredVideo video;
+
+    async Task ToggleVideo()
+    {
+        if (await video.GetPausedAsync())
+        {
+            await video.StartPlayback();
+        }
+        else
+        {
+            await video.PausePlayback();
+        }
+    }
+}

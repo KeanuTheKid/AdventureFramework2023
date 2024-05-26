@@ -81,7 +81,7 @@ svg {
         top: calc(50% - calc(100% * calc(16 / 9) / 2));
     } */
 
-svg > polygon:hover {
+svg > .selectable-svg-element:hover {
     cursor: pointer;
 }
 

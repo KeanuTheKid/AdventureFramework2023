@@ -99,3 +99,12 @@ image {
     pointer-events: none;
     z-index: 100; /* make sure that it's always on top */
 }
+
+#vidtag{
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    z-index: 100; /* make sure that it's always on top */
+
+}

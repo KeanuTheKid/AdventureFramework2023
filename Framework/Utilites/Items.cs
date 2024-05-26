@@ -45,7 +45,7 @@ namespace FrameworkItems
         }
 
         //Seems kinda useless
-        public Item GetPropertiesByName(string ItemName)
+        public Item? GetPropertiesByName(string ItemName)
         {
             //*Returns Item Object With: Name, Desc. and Image Path*// 
             try

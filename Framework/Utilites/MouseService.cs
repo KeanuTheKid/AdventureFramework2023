@@ -5,17 +5,21 @@ namespace Framework.Mouse;
 public interface IMouseService
 {
 	bool GetButtonState(int button);
-	MouseState GetMouseState();
-	MouseState GetStaticMouseState();
+	MouseState MouseState { get; }
+	// MouseState GetStaticMouseState();
 	event EventHandler<ClickEventArgs> OnMouseDown;
 	event EventHandler<ClickEventArgs> OnMouseUp;
 	Task SetDelay(int delay);
+	Task<MouseState> GetMouseStateAsync();
+	Task<(int X, int Y)> ConvertToSvgCoords(double x, double y);
 }
 
 public class ClickEventArgs : EventArgs
 {
 	public int Button;
 	public bool Down;
+	public int X;
+	public int Y;
 }
 
 public struct MouseState
@@ -27,15 +31,9 @@ public struct MouseState
 	public bool Middle;
 }
 
-public class MouseService : IMouseService
+public class MouseService(IJSRuntime jsRuntime) : IMouseService
 {
-	private readonly IJSRuntime jsRuntime;
-
-	public MouseService(IJSRuntime jsRuntime)
-	{
-		this.jsRuntime = jsRuntime;
-	}
-
+	private readonly IJSRuntime jsRuntime = jsRuntime;
 	private DotNetObjectReference<MouseService> objRef = null!;
 
 	public async Task Init(bool disableContextMenu = true)
@@ -44,7 +42,7 @@ public class MouseService : IMouseService
 		await jsRuntime.InvokeVoidAsync("mouse.init", objRef, disableContextMenu);
 	}
 
-	public MouseState MouseState = new()
+	private MouseState mouseState = new()
 	{
 		X = 0,
 		Y = 0,
@@ -58,28 +56,44 @@ public class MouseService : IMouseService
 
 
 	[JSInvokable]
-	public void MouseUp(int button)
+	public void MouseUp(int button, Dictionary<string, int> coords)
 	{
-		MouseState.Left = !(button == 0);
-		MouseState.Right = !(button == 2);
-		MouseState.Middle = !(button == 1);
-		OnMouseUp?.Invoke(this, new ClickEventArgs { Button = button, Down = false });
+		mouseState.Left = !(button == 0);
+		mouseState.Right = !(button == 2);
+		mouseState.Middle = !(button == 1);
+		mouseState.X = coords["x"];
+		mouseState.Y = coords["y"];
+		OnMouseUp?.Invoke(this, new ClickEventArgs
+		{
+			Button = button,
+			Down = false,
+			X = coords["x"],
+			Y = coords["y"]
+		});
 	}
 
 	[JSInvokable]
-	public void MouseDown(int button)
+	public void MouseDown(int button, Dictionary<string, int> coords)
 	{
-		MouseState.Left = button == 0;
-		MouseState.Right = button == 2;
-		MouseState.Middle = button == 1;
-		OnMouseDown?.Invoke(this, new ClickEventArgs { Button = button, Down = true });
+		mouseState.Left = button == 0;
+		mouseState.Right = button == 2;
+		mouseState.Middle = button == 1;
+		mouseState.X = coords["x"];
+		mouseState.Y = coords["y"];
+		OnMouseDown?.Invoke(this, new ClickEventArgs
+		{
+			Button = button,
+			Down = true,
+			X = coords["x"],
+			Y = coords["y"]
+		});
 	}
 
 	[JSInvokable]
 	public void MouseMove(int x, int y)
 	{
-		MouseState.X = x;
-		MouseState.Y = y;
+		mouseState.X = x;
+		mouseState.Y = y;
 	}
 
 	public async Task SetDelay(int delay)
@@ -91,29 +105,56 @@ public class MouseService : IMouseService
 	{
 		return button switch
 		{
-			0 => MouseState.Left,
-			1 => MouseState.Middle,
-			2 => MouseState.Right,
+			0 => mouseState.Left,
+			1 => mouseState.Middle,
+			2 => mouseState.Right,
 			_ => false,
 		};
 	}
 
-	public MouseState GetMouseState()
-	{
-		return MouseState;
-	}
+	// get the actual mouse state
+	public MouseState MouseState => mouseState;
 
-	public MouseState GetStaticMouseState()
+	// get a copy of the mouse state
+	// public MouseState GetStaticMouseState()
+	// {
+	// 	return new MouseState
+	// 	{
+	// 		X = MouseState.X,
+	// 		Y = MouseState.Y,
+	// 		Left = MouseState.Left,
+	// 		Right = MouseState.Right,
+	// 		Middle = MouseState.Middle
+	// 	};
+	// }
+
+	// get the most up to date mouse state no matter what
+	public async Task<MouseState> GetMouseStateAsync()
 	{
+		Dictionary<string, int> state =
+		new(await jsRuntime.InvokeAsync<Dictionary<string, int>>("mouse.getSvgMousePos"));
+		// update mouse state if it is called anyway
+		mouseState.X = state["x"];
+		mouseState.Y = state["y"];
 		return new MouseState
 		{
-			X = MouseState.X,
-			Y = MouseState.Y,
-			Left = MouseState.Left,
-			Right = MouseState.Right,
-			Middle = MouseState.Middle
+			X = state["x"],
+			Y = state["y"],
+			Left = mouseState.Left,
+			Right = mouseState.Right,
+			Middle = mouseState.Middle
 		};
 	}
 
-
+	// params are only doubles because MouseEventArgs.ClientX/Y are doubles
+	// don't know why, but just roll with it
+	// casts from int to double are implicit anyways, so it's not a big deal
+	public async Task<(int X, int Y)> ConvertToSvgCoords(double x, double y)
+	{
+		Dictionary<string, int> coords =
+		new(await jsRuntime.InvokeAsync<Dictionary<string, int>>("mouse.convertCoords", x, y));
+		return (coords["x"], coords["y"]);
+	}
 }
+
+

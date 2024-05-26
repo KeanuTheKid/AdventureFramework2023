@@ -1,0 +1,17 @@
+{
+    "MinigameTest3": {
+        "Type": "Minigame",
+        "MinigameDefClassName": "Framework.Minigames.MinigameDefClasses.MyMinigame",
+        "FallbackSlide": "HM305Beamer"
+    },
+    "TestMinigame": {
+        "Type": "Minigame",
+        "MinigameDefClassName": "Framework.Minigames.MinigameDefClasses.MyMinigame",
+        "FallbackSlide": "HM305Beamer"
+    },
+    "MinigameTest": {
+        "Type": "Minigame",
+        "FallbackSlide": "HM305Beamer",
+        "MinigameDefClassName": "Framework.Minigames.MiniTest"
+    }
+}

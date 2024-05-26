@@ -9,20 +9,14 @@ public interface IKeyboardService
 {
 	bool GetKeyState(string key);
 	Dictionary<string, bool> GetKeyboardState();
-	Dictionary<string, bool> GetStaticKeyboardState();
+	// Dictionary<string, bool> GetStaticKeyboardState();
 	event EventHandler<KeyEventArgs> OnKeyDown;
 	event EventHandler<KeyEventArgs> OnKeyUp;
 }
 
-public class KeyboardService : IKeyboardService
+public class KeyboardService(IJSRuntime jsRuntime) : IKeyboardService
 {
-	private readonly IJSRuntime jsRuntime;
-
-	public KeyboardService(IJSRuntime jsRuntime)
-	{
-		this.jsRuntime = jsRuntime;
-	}
-
+	private readonly IJSRuntime jsRuntime = jsRuntime;
 	private DotNetObjectReference<KeyboardService> objRef = null!;
 
 	public async Task Init()
@@ -161,11 +155,11 @@ public class KeyboardService : IKeyboardService
 		return keyboardState[key];
 	}
 
-	public Dictionary<string, bool> GetKeyboardState() => keyboardState;
+	// public Dictionary<string, bool> GetKeyboardState() => keyboardState;
 
-	public Dictionary<string, bool> GetStaticKeyboardState()
+	public Dictionary<string, bool> GetKeyboardState()
 	{
-		Dictionary<string, bool> state = new();
+		Dictionary<string, bool> state = [];
 		foreach (var kvp in keyboardState)
 		{
 			state.Add(kvp.Key, kvp.Value);

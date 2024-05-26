@@ -4,15 +4,19 @@
 @using Framework.Game
 @using Framework.Keyboard
 @using Framework.Mouse
+@using Framework.Sound
+@using Framework.Video
 
 @inject SlideService SlideService
 @inject GameState GameState
 @inject KeyboardService KeyboardService
 @inject MouseService MouseService
+@inject SoundService SoundService
+@inject VideoService VideoService
 
 @if (initTask.IsCompletedSuccessfully) {
     if (gameStarted) {
-        <Game />
+        <Game Debug=@debugMode />
     }
     else {
         <h1 id="test">Hello, world!</h1>
@@ -32,12 +36,16 @@ else {
 
     private bool gameStarted = false;
 
+    private bool debugMode = true;
+
     protected override async Task OnInitializedAsync()
     {
         await GameState.LoadGameStateAndItemsAsync();
-        await SlideService.Init(true);
+        await SlideService.Init(debugMode);
         await KeyboardService.Init();
         await MouseService.Init();
+        await SoundService.Init();
+        await VideoService.Init();
         _tcs.SetResult(true);
     }
 

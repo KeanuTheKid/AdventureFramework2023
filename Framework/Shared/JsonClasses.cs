@@ -15,9 +15,9 @@ public class JsonSlide
 
 	public List<List<string>>? OnEnter { get; set; }
 
-	// Temporary for Minigame Compatibility
 	public string? MinigameDefClassName { get; set; }
-	public string? FallbackSlide { get; set; }
+	// // Temporary for Minigame Compatibility
+	// public string? FallbackSlide { get; set; }
 }
 
 public class JsonButton

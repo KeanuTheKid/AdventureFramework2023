@@ -25,7 +25,7 @@ public class MyMinigame : MinigameDefBase
 			Width = 100,
 			Height = 100,
 			Fill = "red",
-			OnClick = (args) => { Finish(true); }
+			OnClick = (args) => { Finish(null, "HM305"); }
 		};
 
 		for (int i = 100; i < 1900; i += 100)
@@ -46,11 +46,6 @@ public class MyMinigame : MinigameDefBase
 		}
 
 
-	}
-
-	public void Hello(EventArgs args)
-	{
-		Finish(true);
 	}
 
 

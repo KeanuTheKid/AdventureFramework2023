@@ -30,7 +30,7 @@ i.e. the class that they make and all this stuff, sould always stay the same.
 @inherits MinigameBase
 
 <img id="bg-img" src="@MinigameDef.BackgroundImage">
-<svg id="svg" viewBox="0,0,1920,1080">
+<svg id="svg" viewBox="0,0,1620,1080">
       @foreach (var component in MinigameDef.Elements.GetRenderOrder()) {
          @* @((MarkupString)component.GetMarkupString()) *@
          if (component.Visible) {
