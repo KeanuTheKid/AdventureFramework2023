@@ -61,7 +61,7 @@ that it's not going to be the one that uses C#.
 System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)Thread.CurrentThread.CurrentCulture.Clone();
 customCulture.NumberFormat.NumberDecimalSeparator = ".";
 
-Thread.CurrentThread.CurrentCulture = customCulture;
+System.Globalization.CultureInfo.DefaultThreadCurrentCulture = customCulture;
 
 builder.Services.AddScoped<SoundService>();
 
