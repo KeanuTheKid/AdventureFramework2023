@@ -1,5 +1,5 @@
-using FrameworkItems;
-using GameStateInventory;
+using Framework.Items;
+using Framework.State;
 using Framework.Slides.JsonClasses;
 
 
@@ -14,10 +14,10 @@ public class SlidesJsonException : Exception
 	public SlidesJsonException(string message, Exception inner) : base(message, inner) { }
 }
 
-public class SlidesVerifier(GameState gameState, Items items)
+public class SlidesVerifier(GameState gameState, ItemService items)
 {
 	private readonly GameState gameState = gameState;
-	private readonly Items items = items;
+	private readonly ItemService items = items;
 
 	private Dictionary<string, JsonSlide>? CurrentState { get; set; }
 

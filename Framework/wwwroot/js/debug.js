@@ -75,4 +75,9 @@ window.debug = {
             .invokeMethodAsync("GetItems")
             .then((items) => console.log(items));
     },
+    redbull: function (amount = 0) {
+        this.objRef
+            .invokeMethodAsync("RedBull", amount)
+            .then((res) => console.log(res));
+    },
 };

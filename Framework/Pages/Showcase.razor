@@ -1,0 +1,89 @@
+@page "/showcase"
+
+@using Framework.Minigames
+@using Framework.Keyboard
+@using Framework.Mouse
+@using Framework.State
+@using Framework.Sound
+
+@inject KeyboardService KeyboardService
+@inject MouseService MouseService
+@inject GameState GameState
+@inject SoundService SoundService
+
+@if (MinigameDefClass != "") {
+    <Minigame MinigameDefClass="@MinigameDefClass" OnFinished='async () => { await Task.Delay(1000); MinigameDefClass = ""; }' />
+} else {
+    <p style="color:white">
+        Click on the buttons to go to a minigame. Press escape to get out of a minigame.
+        If a minigame finishes, you also return here. 
+        (it first waits 1 second before returning to this page to give you time to see the end screen)
+        If you reload the page, go back to the index first and then to this page, 
+        as sound and other stuff won't work if you just stay on this page.
+        Use the "Add 100 RedBulls" button to get 100 RedBulls for testing purposes.
+        You are going to need it for the Bossfight minigame.
+    </p>
+    <button @onclick='() => GameState.ChangeRedBull(100)'>Add 100 RedBulls</button>
+    @* List of buttons goes here *@
+    @* Just copy-paste and change the MinigameDefClass and text *@
+    <div id="cont">
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.PianoMinigame"'>
+            <strong>Piano Minigame - Andrii</strong><br />
+            You may have to click the button to play the chord multiple times to get it to work fully. <br />
+            It is supposed to play 3 notes, but does not always work. <br />
+            Not Andrii's fault though, it's just the janky way the sound works.
+        </button>
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.ArmDrugge"'>
+            <strong>Arm drügge - Amos & Gian</strong>
+        </button>
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.BossFightMinigame"'>
+            <strong>Boss Fight - Keanu & Davide</strong><br />
+            Boss is way too overpowered, you need a ton of RedBulls. <br />
+            You can get 100 RedBulls by clicking the button above.
+        </button>
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.LockpickingMinigame"'>
+            <strong>Lockpicking Minigame - Hamza & Luca</strong>
+        </button>
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.BiologyMinigame"'>
+            <strong>Biology Minigame - Luan</strong>
+        </button>
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.PhMinigame"'>
+            <strong>Physik Minigame  - Zeynep</strong>
+        </button>
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.FindErrorsMinigame"'>
+            <strong>Find Errors Minigame - Rejda</strong>
+        </button>
+        <button @onclick='() => MinigameDefClass = "Framework.Minigames.MinigameDefClasses.Geography"'>
+            <strong>Geography Minigame - Aaron</strong><br />
+            Does not work, need to contact Aaron to fix it.
+        </button>
+    </div>
+}
+
+@code {
+    private string MinigameDefClass = "";
+
+    protected override void OnInitialized()
+    {
+        KeyboardService.OnKeyDown += HandleKeyDown;
+    }
+
+    private void HandleKeyDown(object? sender, KeyEventArgs e)
+    {
+        // if the escape key is pressed, close the minigame
+        if (e.Key == "Escape")
+        {
+            MinigameDefClass = "";
+            // Clear event handlers of IO services
+            KeyboardService.ClearEvents();
+            MouseService.ClearEvents();
+
+            // stop music
+            _ = SoundService.StopMusic();
+
+            // reattach the event handler for the back button
+            KeyboardService.OnKeyDown += HandleKeyDown;
+            StateHasChanged();
+        }
+    }
+}

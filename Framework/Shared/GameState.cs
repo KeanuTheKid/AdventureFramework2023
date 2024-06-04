@@ -3,17 +3,16 @@ using Microsoft.AspNetCore.Components;
 
 
 using JsonUtilities;
-using FrameworkItems;
-using static InventoryEvent;
-using Microsoft.JSInterop;
+using Framework.Items;
+// using static InventoryEvent;
 using ObjectEncoding;
-using Framework.Minigames;
 //Notifications
 using Blazored.Toast.Services;
-using System.Runtime.CompilerServices;
-using System.Text.Json;
 
-namespace GameStateInventory;
+using Framework.Toast;
+using Blazored.Toast;
+
+namespace Framework.State;
 
 public interface IGameState
 {
@@ -35,6 +34,9 @@ public interface IGameState
 
 	void SetFromSaveString(string saveString);
 	string GetSaveString();
+
+	int RedBullCount { get; }
+	void ChangeRedBull(int amount);
 }
 
 // interface for the minigames so that they don't accidentally overwrite everything
@@ -50,14 +52,17 @@ public interface IMinigameGameState
 	void AddItem(string id);
 	void RemoveItem(string id);
 	bool CheckForItem(string id);
+
+	int RedBullCount { get; }
+	void ChangeRedBull(int amount);
 }
 
-public class GameState(JsonUtility jsonUtility, Items items, IToastService toastService) : IGameState, IMinigameGameState
+public class GameState(JsonUtility jsonUtility, ItemService items, IToastService toastService) : IGameState, IMinigameGameState
 {
 	// dependencies
 	private readonly IToastService ToastService = toastService;
 	private readonly JsonUtility JsonUtility = jsonUtility;
-	private readonly Items Items = items;
+	private readonly ItemService Items = items;
 
 
 	// initialize with empty data
@@ -69,6 +74,21 @@ public class GameState(JsonUtility jsonUtility, Items items, IToastService toast
 	// should be set by the slide service
 	public string CurrentSlide { get { return Data.CurrentSlide; } set { Data.CurrentSlide = value; } }
 
+	// Red Bull methods
+	private int RedBulls { get { return Data.RedBulls; } set { Data.RedBulls = value; } }
+	public int RedBullCount => RedBulls;
+	public void ChangeRedBull(int amount)
+	{
+		RedBulls += amount;
+		if (RedBulls < 0)
+		{
+			RedBulls = 0;
+		}
+		// to update UI
+		OnGameStateChange?.Invoke(this, EventArgs.Empty);
+	}
+
+	public event EventHandler? OnGameStateChange;
 
 	public async Task LoadGameStateAndItemsAsync(string path = "gamestate.json")
 	{
@@ -120,9 +140,16 @@ public class GameState(JsonUtility jsonUtility, Items items, IToastService toast
 
 		if (!removed)
 		{
-			throw new ArgumentException($"Element {id} is not in Inventory");
+			return;
+			//? maybe not throw an exception?
+			// throw new ArgumentException($"Element {id} is not in Inventory");
 		}
 		// Console.WriteLine($"Successfully removed {id} from inventory");
+		// ToastService.ShowSuccess($"Removed {Items.items[id].Name} from inventory");
+		ToastParameters parameters = new();
+		parameters.Add(nameof(ToastMessage.Message), $"Removed {Items.items[id].Name} from inventory");
+		ToastService.ShowToast<ToastMessage>(parameters);
+		OnGameStateChange?.Invoke(this, EventArgs.Empty);
 	}
 
 	public void AddItem(string id)
@@ -132,12 +159,24 @@ public class GameState(JsonUtility jsonUtility, Items items, IToastService toast
 		{
 			throw new Exception("Item doesn't exist in items.json Dictionary");
 		}
+		// make sure there are no duplicates
+		if (ItemsInInventory.Contains(id))
+		{
+			return;
+			//? maybe not throw an exception?
+			// throw new ArgumentException($"Element {id} is already in Inventory");
+		}
 		ItemsInInventory.Add(id);
 
-		ToastService.ShowSuccess($"Added {id} to inventory");
+		// ToastService.ShowSuccess($"Added {Items.items[id].Name} to inventory");
 
-		//Event handler for updateing inventory images
-		InventoryEvent.OnItemAdded(this, new ItemAddedEventArgs { ItemId = id });
+		ToastParameters parameters = new();
+		parameters.Add(nameof(ToastMessage.Message), $"Added {Items.items[id].Name} to inventory");
+		ToastService.ShowToast<ToastMessage>(parameters);
+
+		// //Event handler for updateing inventory images
+		// InventoryEvent.OnGameStateChange(this, new ItemAddedEventArgs { ItemId = id });
+		OnGameStateChange?.Invoke(this, EventArgs.Empty);
 	}
 
 	public bool CheckForItem(string id)
@@ -145,10 +184,8 @@ public class GameState(JsonUtility jsonUtility, Items items, IToastService toast
 		return ItemsInInventory.Contains(id);
 	}
 
-	public List<string> GetItemStrings()
-	{
-		return ItemsInInventory;
-	}
+	public List<string> GetItemStrings() => ItemsInInventory;
+
 	public Dictionary<string, Item> GetItemObjects()
 	{
 		Dictionary<string, Item> ItemObjects = new();
@@ -181,6 +218,7 @@ public class GameStateData
 	public List<string> Items { get; set; } = [];
 	public Dictionary<string, bool> GameState { get; set; } = [];
 	public string CurrentSlide { get; set; } = "";
+	public int RedBulls { get; set; } = 0;
 
 	//public Dictionary<string, Dictionary<string, > DialogueProgress {get; set;} = [];
 }

@@ -122,4 +122,12 @@ public partial class GameBase
 		return [.. GameState.GetItemObjects().Keys];
 	}
 
+	[JSInvokable]
+	public int RedBull(int amount)
+	{
+		// package getredbullcount and changeredbull into one method
+		// if you want to get amount, just pass 0
+		GameState.ChangeRedBull(amount);
+		return GameState.RedBullCount;
+	}
 }

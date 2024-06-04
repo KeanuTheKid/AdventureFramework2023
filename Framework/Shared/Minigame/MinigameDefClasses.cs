@@ -226,6 +226,7 @@ public class CodeTerminal : MinigameDefBase
 		};
 	}
 
+
 }
 
 public class KillTest : MinigameDefBase
@@ -466,9 +467,9 @@ public class VideoTest : MinigameDefBase
 	public override string BackgroundImage { get; set; } = "images/HM3_hallwayN.jpg";
 
 	[Element]
-	public Rectangle PlaceLeft { get; set;}
+	public Rectangle PlaceLeft { get; set; }
 	[Element]
-	public Rectangle PlaceRight { get; set;}
+	public Rectangle PlaceRight { get; set; }
 	[Element]
 	public Rectangle Play { get; set; }
 	[Element]
@@ -499,16 +500,19 @@ public class VideoTest : MinigameDefBase
 
 
 
-	public VideoTest(){
-		PlaceLeft = new(){
-            X = 0,
-            Y = 0,
-            Width = 100,
-            Height = 100,
-            Fill = "red",
-            OnClick = (args) => _ = PlaceVideo("200", "200", "500", "500", "/videos/axel f.mp4")
-        };
-		PlaceRight = new(){
+	public VideoTest()
+	{
+		PlaceLeft = new()
+		{
+			X = 0,
+			Y = 0,
+			Width = 100,
+			Height = 100,
+			Fill = "red",
+			OnClick = (args) => _ = PlaceVideo("200", "200", "500", "500", "/videos/axel f.mp4")
+		};
+		PlaceRight = new()
+		{
 			X = 200,
 			Y = 0,
 			Width = 100,
@@ -516,33 +520,36 @@ public class VideoTest : MinigameDefBase
 			Fill = "blue",
 			OnClick = (args) => _ = PlaceVideo("500", "200", "500", "500", "/videos/axel f.mp4")
 		};
-		Play = new(){
-            X = 0,
-            Y = 100,
-            Width = 100,
-            Height = 100,
-            Fill = "yellow",
-            OnClick = (args) => _ = PlayVideo()
-        };
-		Pause = new(){
-            X = 0,
-            Y = 200,
-            Width = 100,
-            Height = 100,
-            Fill = "green",
-            OnClick = (args) => _ = PauseVideo()
-        };
-		
-		Letfinish = new(){
-            X = 0,
-            Y = 400,
-            Width = 100,
-            Height = 100,
-            Fill = "violet",
-            OnClick = (args) => _ = LetFinish()
-        };
-		
-		
+		Play = new()
+		{
+			X = 0,
+			Y = 100,
+			Width = 100,
+			Height = 100,
+			Fill = "yellow",
+			OnClick = (args) => _ = PlayVideo()
+		};
+		Pause = new()
+		{
+			X = 0,
+			Y = 200,
+			Width = 100,
+			Height = 100,
+			Fill = "green",
+			OnClick = (args) => _ = PauseVideo()
+		};
+
+		Letfinish = new()
+		{
+			X = 0,
+			Y = 400,
+			Width = 100,
+			Height = 100,
+			Fill = "violet",
+			OnClick = (args) => _ = LetFinish()
+		};
+
+
 	}
 }
 
@@ -898,3 +905,100 @@ public class IOServicesTest : MinigameDefBase
 // 		});
 // 	}
 // }
+
+public class DimitriDialogue : MinigameDefBase
+{
+	public override string BackgroundImage { get; set; } = "images/HM3_hallwayN.jpg"; // Background Image
+
+
+	//DIALOGUE STUFF
+	private Image QuitButton { get; set; }
+	private Image ForwardButton { get; set; }
+
+	private Dialogue dialogue;
+
+	//MINIGAME STUFF
+	[Element]
+	public required Rectangle NpcHitBox { get; set; }
+
+	List<List<string>> messages = [
+		["player", "Hello"],
+		["npc", "bring me something"],
+		["player", "Hello"],
+		["npc", "did you bring it?"],
+		["npc", "this text is white"],
+		["npc", "this text is white"],
+		["npc", "this text is white"],
+		["npc", "this text is white"],
+		["npc", "this text is white"],
+		["npc", "this text is white"],
+		["npc", "this text is white"],
+	];
+
+	public DimitriDialogue()
+	{
+		dialogue = new Dialogue(messages);
+
+		NpcHitBox = new()
+		{
+			X = 1500,
+			Y = 1000,
+			Width = 100,
+			Height = 100,
+			Fill = "green",
+			OnClick = async (args) => { Console.WriteLine("Click On NPC"); await StartDialogueAsync(); }
+		};
+	}
+
+	public async Task StartDialogueAsync()
+	{
+		bool quit = false;
+		bool forward = false;
+
+		//Create forward and quit button
+		QuitButton = dialogue.DrawQuitButton();
+		ForwardButton = dialogue.DrawForwardButton();
+
+		AddElement(QuitButton);
+		AddElement(ForwardButton);
+
+		QuitButton.OnClick = (args) => { quit = true; Console.WriteLine("Quit"); };
+		ForwardButton.OnClick = (args) => { forward = true; Console.WriteLine("Forward"); };
+
+		Update();
+
+		foreach (List<string> speech in messages)
+		{
+			GameObjectContainer<SVGElement> Bubble = dialogue.DrawSpeechBubble(speech[0], speech[1]);
+
+			AddElementsInContainer(Bubble);
+
+			Update();
+
+			await WaitForConditionAsync(() => forward || quit);
+
+			foreach (string key in Bubble.Keys)
+			{
+				Elements.Remove(key);
+			}
+
+			if (quit == true)
+			{
+				Update();
+				break;
+			}
+
+			forward = false;
+
+			Update();
+		}
+	}
+
+	private async Task WaitForConditionAsync(Func<bool> condition)
+	{
+		while (!condition())
+		{
+			await Task.Delay(100); // Check the condition every 100 milliseconds
+		}
+	}
+}

@@ -1,7 +1,7 @@
 using JsonUtilities;
 using Framework.Slides.JsonClasses;
-using GameStateInventory;
-using FrameworkItems;
+using Framework.State;
+using Framework.Items;
 
 namespace Framework.Slides;
 

@@ -5,6 +5,7 @@
 @using Framework.Slides
 @using Framework.Minigames
 @using Framework.InventoryUI
+@using Framework.PauseMenu
 
 
 @* <DynamicComponent Type=@typeof(Framework.Slides.Slide) 
@@ -19,7 +20,6 @@ Parameters=@(new Dictionary<string, object>{
     <DynamicComponent Type=@typeof(Slide) Parameters="Parameters.GetParameterDictionary()" />
 }
 
-@* <GameStateInventory.InventoryUI /> *@
-
+<PauseMenu />
 
 @* <img src="images/calculator.png" style="z-index:10; position:absolute;"/> *@

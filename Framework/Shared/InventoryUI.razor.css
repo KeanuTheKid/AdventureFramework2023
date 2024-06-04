@@ -1,51 +1,82 @@
-
-img {
-    position: relative;
-    width: 100px; 
-    height: auto;
-    margin: 0 10px; 
-  }
-/*  
-  .horizontal-images {
-    position: absolute;
-    bottom: 10%;
-    left: 50%;
-    transform: translateX(-50%); 
-    
+.horizontal-images {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: start;
+    flex-wrap: wrap;
     width: 100%;
-    text-align: center; 
+    height: 25%;
+    position: absolute;
+    top: 5%;
+    left: 0;
     pointer-events: none;
-  } 
-*/
-  
-  .horizontal-images {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    text-align: center;
-    pointer-events: none; /*Disable mouse events on the div*/
 }
 
-.image-container {
+.item-container {
     position: relative;
-    display: inline-block;
     margin: 0 10px;
     pointer-events: auto;
+    height: 50%;
+    width: 10%;
 
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.image-text {
-    position: relative;
-    bottom: -100%; /* Position the text below the image */
-    left: 50%; /* Center the text horizontally */
-    transform: translateX(-50%);
-    opacity: 0; /* Initially hide the text */
-    transition: opacity 0.3s ease; /* Add a smooth transition */
+.image {
+    max-width: 100%;
+    max-height: 100%;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+}
+
+.text-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+
     color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-.image-container:hover .image-text {
-    opacity: 1; /* Show the text on hover */
+.title {
+    text-align: center;
+    font-weight: bold;
+    width: 100%;
+
+    font-size: calc(2vh * 1.5);
+}
+
+.description {
+    text-align: center;
+    width: 100%;
+    font-size: calc(1.5vh * 1.5);
+}
+
+@media (max-aspect-ratio: 3/2) {
+    .title {
+        font-size: 2vw;
+    }
+    .description {
+        font-size: 1.5vw;
+    }
+}
+
+.item-container:hover .image {
+    opacity: 0.2;
+}
+
+.item-container:hover .text-container {
+    opacity: 1;
 }

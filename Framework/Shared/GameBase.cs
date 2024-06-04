@@ -1,7 +1,7 @@
 using Framework.Slides;
 using Microsoft.AspNetCore.Components;
 using Framework.Game.Parameters;
-using GameStateInventory;
+using Framework.State;
 using Framework.Sound;
 
 
@@ -164,7 +164,7 @@ public partial class GameBase : ComponentBase
 
 				case "RequireGameState":
 					// if the check is negated
-					if (action[1].StartsWith("!"))
+					if (action[1].StartsWith('!'))
 					{
 						// remove leading "!"
 						if (!GameState.GetState(action[1][1..]))
@@ -229,6 +229,10 @@ public partial class GameBase : ComponentBase
 
 				case "Sleep":
 					await Task.Delay(int.Parse(action[1]));
+					break;
+
+				case "ChangeRedBull":
+					GameState.ChangeRedBull(int.Parse(action[1]));
 					break;
 
 				default:

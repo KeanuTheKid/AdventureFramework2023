@@ -157,6 +157,11 @@
                 "Type": "polygon",
                 "Points": "38,558 38,676 135,664 135,558",
                 "Actions": [["Route", "HM3_Locker"]]
+            },
+            "MusicRoom": {
+                "Type": "rect",
+                "Points": "1000,300,100,500",
+                "Actions": [["Route", "MusicRoom"]]
             }
         }
     },

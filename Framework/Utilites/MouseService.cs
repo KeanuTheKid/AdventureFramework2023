@@ -155,6 +155,13 @@ public class MouseService(IJSRuntime jsRuntime) : IMouseService
 		new(await jsRuntime.InvokeAsync<Dictionary<string, int>>("mouse.convertCoords", x, y));
 		return (coords["x"], coords["y"]);
 	}
+
+	// quite dangerous, only use if you know what you're doing
+	public void ClearEvents()
+	{
+		OnMouseDown = null;
+		OnMouseUp = null;
+	}
 }
 
 

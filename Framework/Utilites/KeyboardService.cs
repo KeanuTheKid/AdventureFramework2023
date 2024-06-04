@@ -166,6 +166,13 @@ public class KeyboardService(IJSRuntime jsRuntime) : IKeyboardService
 		}
 		return state;
 	}
+
+	// quite dangerous, only use if you know what you're doing
+	public void ClearEvents()
+	{
+		OnKeyDown = null;
+		OnKeyUp = null;
+	}
 }
 
 public class KeyEventArgs : EventArgs

@@ -1,0 +1,10 @@
+@namespace Framework.Toast
+
+<div id="msg">
+    @Message
+</div>
+
+@code {
+    [Parameter]
+    public string Message { get; set; } = "";
+}

@@ -13,5 +13,10 @@
         "Type": "Minigame",
         "FallbackSlide": "HM305Beamer",
         "MinigameDefClassName": "Framework.Minigames.MiniTest"
+    },
+    "PianoMinigame": {
+        "Type": "Minigame",
+        "FallbackSlide": "MusicRoom",
+        "MinigameDefClassName": "Framework.Minigames.MinigameDefClasses.PianoMinigame"
     }
 }

@@ -2,13 +2,14 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Framework;
 using JsonUtilities;
-using GameStateInventory;
+using Framework.State;
 using Blazored.Toast;
 using Framework.Slides;
 using Framework.Keyboard;
 using Framework.Mouse;
 using Framework.Sound;
 using Framework.Video;
+using Framework.Items;
 
 
 var builder = WebAssemblyHostBuilder.CreateDefault(args);
@@ -19,7 +20,7 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 
 builder.Services.AddScoped<JsonUtility>();
 
-builder.Services.AddScoped<FrameworkItems.Items>();
+builder.Services.AddScoped<ItemService>();
 
 // Notifications
 builder.Services.AddBlazoredToast();
@@ -43,7 +44,7 @@ builder.Services.AddScoped<SlidesVerifier>();
 
 // // execute the async method to load the gamestate and items
 // await ServiceProvider.GetRequiredService<GameState>().LoadGameStateAndItemsAsync();
-// // builder.Sexrvices.AddScoped(sp => {new GameState(sp.GetRequiredService<JsonUtility>(), sp.GetRequiredService<FrameworkItems.Items>())});
+// // builder.Sexrvices.AddScoped(sp => {new GameState(sp.GetRequiredService<JsonUtility>(), sp.GetRequiredService<Framework.Items.Items>())});
 
 builder.Services.AddScoped<KeyboardService>();
 builder.Services.AddScoped<MouseService>();

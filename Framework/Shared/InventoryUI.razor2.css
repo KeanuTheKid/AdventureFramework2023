@@ -1,0 +1,51 @@
+img {
+    position: relative;
+    width: 100px;
+    height: auto;
+    margin: 0 10px;
+}
+/*  
+  .horizontal-images {
+    position: absolute;
+    bottom: 10%;
+    left: 50%;
+    transform: translateX(-50%); 
+    
+    width: 100%;
+    text-align: center; 
+    pointer-events: none;
+  } 
+*/
+
+.horizontal-images {
+    position: absolute;
+    top: 0;
+    /* Dafuq */
+    /* so first you place it 50% to right, and then move it back 50% */
+    /* left: 50%;
+    transform: translateX(-50%); */
+    width: 100%;
+    text-align: center;
+    pointer-events: none; /*Disable mouse events on the div*/
+}
+
+.image-container {
+    position: relative;
+    display: inline-block;
+    margin: 0 10px;
+    pointer-events: auto;
+}
+
+.image-text {
+    position: relative;
+    bottom: 100%; /* Position the text below the image */
+    /* left: 50%; */ /* Center the text horizontally */
+    /* transform: translateX(-50%); */
+    opacity: 0; /* Initially hide the text */
+    transition: opacity 0.3s ease; /* Add a smooth transition */
+    color: white;
+}
+
+.image-container:hover .image-text {
+    opacity: 1; /* Show the text on hover */
+}

@@ -1,0 +1,31 @@
+@using Framework.InventoryUI
+@using Framework.State
+
+@inject GameState GameState
+
+@namespace Framework.PauseMenu
+
+<div id="background" style="@backgroundStyle" ></div>
+<img id="button" src="UI_Images/menu.png" alt="menu" @onclick="ToggleMenu">
+
+<div id="menu-container" style="@menuContainerStyle" >
+    @if (showMenu) {
+        <InventoryUI />
+    }
+</div>
+
+@code {
+    private bool showMenu = false;
+
+    private string backgroundStyle => showMenu ? "opacity: 1; pointer-events: auto;" : "opacity: 0; pointer-events: none";
+
+    private string menuContainerStyle => showMenu ? "opacity: 1" : "opacity: 0";
+
+    private void ToggleMenu() {
+        showMenu = !showMenu;
+    }
+
+    protected override void OnInitialized() {
+        GameState.OnGameStateChange += (sender, e) => StateHasChanged();
+    }
+}

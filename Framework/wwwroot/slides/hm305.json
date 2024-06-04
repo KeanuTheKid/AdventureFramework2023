@@ -65,6 +65,7 @@
                 "Points": "1206,155 861,160 856,878 1235,876",
                 "Actions": [
                     ["RequireItem", "goldkey"],
+                    ["RemoveItem", "goldkey"],
                     ["Route", "HM305DoorOpen"]
                 ]
             },

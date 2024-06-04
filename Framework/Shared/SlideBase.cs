@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Framework.Slides.JsonClasses;
-using GameStateInventory;
+using Framework.State;
 
 namespace Framework.Slides;
 

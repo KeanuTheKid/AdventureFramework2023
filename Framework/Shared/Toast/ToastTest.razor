@@ -1,0 +1,28 @@
+@using Blazored.Toast.Services
+@using Blazored.Toast.Configuration
+@using Blazored.Toast
+@using Framework.Toast
+
+@inject IToastService ToastService
+
+<button @onclick=@(() => ShowToast("Short Text"))>Short Text</button>
+<button @onclick=@(() => ShowToast("Really long text this is a long text lorem ipsum dolor sit amet consecitur muhahaha ahet test test test end end end end end end end end end end end end end end end"))>Show Long Toast</button>
+
+<InputText @bind-Value="Msg" @onclick="() => ShowToast(Msg)"/>
+
+@code {
+    string Msg { get; set; } = "Hello World!";
+
+    protected override void OnInitialized()
+    {
+        ToastService.ShowSuccess("Hello World!");
+    }
+
+    private void ShowToast(string msg)
+    {
+        ToastParameters parameters = new();
+        parameters.Add(nameof(ToastMessage.Message), msg);
+
+        ToastService.ShowToast<ToastMessage>(parameters);
+    }
+}

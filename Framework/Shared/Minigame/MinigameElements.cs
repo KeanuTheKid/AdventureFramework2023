@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
-using GameStateInventory;
+using Framework.State;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Rendering;
 
@@ -627,21 +627,23 @@ public class ForeignObject : SVGElement
 	}
 }
 
-public class Dialogue {
+public class Dialogue
+{
 	//private readonly DialogueProgress progress;
 	List<List<string>> Messages = [];
 
 	List<string> Speakers = [];
-    const int CENTERX = 750;
+	const int CENTERX = 750;
 	const int CENTERY = 530;
 
 	bool ContainsPlayer;
 
-    public Dialogue (List<List<string>> messages){
+	public Dialogue(List<List<string>> messages)
+	{
 		Messages = messages;
 		Speakers = ExtractUniqueSpeakers(messages);
 		ContainsPlayer = Speakers.Contains("Player");
-		
+
 	}
 
 	//*****************
@@ -649,21 +651,21 @@ public class Dialogue {
 	//*****************
 
 	private List<string> ExtractUniqueSpeakers(List<List<string>> nestedLists)
-    {
-        HashSet<string> uniqueElements = [];
-        
-        foreach (var nestedList in nestedLists)
-        {
-            if (nestedList.Count > 0)
-            {
-                uniqueElements.Add(nestedList[0]);
-            }
-        }
-        
-        return new List<string>(uniqueElements);
-    }
+	{
+		HashSet<string> uniqueElements = [];
 
-	
+		foreach (var nestedList in nestedLists)
+		{
+			if (nestedList.Count > 0)
+			{
+				uniqueElements.Add(nestedList[0]);
+			}
+		}
+
+		return new List<string>(uniqueElements);
+	}
+
+
 
 	private int GetLongestMessage(List<List<string>> messages)
 	{
@@ -688,11 +690,13 @@ public class Dialogue {
 	//*****************
 	//DRAWING FUNCTIONS
 	//*****************
-	
 
-	public Image DrawQuitButton (){
 
-		return new Image(){
+	public Image DrawQuitButton()
+	{
+
+		return new Image()
+		{
 			ImagePath = "UI_Images/backImg.png",
 			ZIndex = 6,
 			X = 100,
@@ -703,9 +707,11 @@ public class Dialogue {
 
 	}
 
-	public Image DrawForwardButton (){
-		
-		return new Image(){
+	public Image DrawForwardButton()
+	{
+
+		return new Image()
+		{
 			ImagePath = "UI_Images/arrows/right.png",
 			ZIndex = 6,
 			X = 1400,
@@ -716,42 +722,51 @@ public class Dialogue {
 
 	}
 
-	private List<int> AutoPlacement(string currentSpeaker){
+	private List<int> AutoPlacement(string currentSpeaker)
+	{
 
-		if (Speakers.Count == 1){
+		if (Speakers.Count == 1)
+		{
 			return [CENTERX, CENTERY];
 		}
 
-		if (ContainsPlayer){
+		if (ContainsPlayer)
+		{
 
 			Console.WriteLine("Messages Contains Player");
 
-			if (currentSpeaker == "Player"){
+			if (currentSpeaker == "Player")
+			{
 				return [CENTERX, CENTERY + 300];
 			}
 
-			else {
+			else
+			{
 				return [CENTERX, CENTERY - 200];
 			}
 
 		}
-		else {
+		else
+		{
 
-			if (currentSpeaker == Speakers[1]){
+			if (currentSpeaker == Speakers[1])
+			{
 				return [CENTERX, CENTERY + 300];
 			}
 
-			else {
+			else
+			{
 				return [CENTERX, CENTERY - 200];
 			}
 		}
 	}
-	
+
 	public GameObjectContainer<SVGElement> DrawSpeechBubble(string speaker, string message, bool autoPlacement = true, int x = CENTERX, int y = CENTERY)
 	{
-	
+
 		//Change Position depending on speaker
-		if (autoPlacement){
+		if (autoPlacement)
+		{
 			List<int> positions = AutoPlacement(speaker);
 			x = positions[0];
 			y = positions[1];
@@ -820,6 +835,4 @@ public class Dialogue {
 		// Return the assembled speech bubble
 		return Bubble;
 	}
-
-
 }
